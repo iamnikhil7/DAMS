@@ -1,6 +1,8 @@
 <?php
 session_start();
+// IMPORTANT: Ensure 'doctor/includes/dbconnection.php' has the correct database credentials.
 include('doctor/includes/dbconnection.php');
+
 if(isset($_POST['submit'])) {
     $name=$_POST['name'];
     $mobnum=$_POST['phone'];
@@ -13,21 +15,20 @@ if(isset($_POST['submit'])) {
     $aptnumber=mt_rand(100000000, 999999999);
     $cdate=date('Y-m-d');
     
-    // FIX START: Use Unix timestamps for reliable date and time comparison.
+    // Use Unix timestamps for reliable date and time comparison.
     $currentTimeStamp = time(); 
     $appointmentDateTime = $appdate . ' ' . $aaptime;
     $appointmentTimeStamp = strtotime($appointmentDateTime);
-    // FIX END
     
-    // Validate appointment date (must be today or later)
+    // 1. Validate appointment date (must be today or later)
     if($appdate < $cdate) {
         echo '<script>alert("Appointment date must be today or later")</script>';
     } 
-    // Validation logic: Check if appointment timestamp is less than or equal to current timestamp.
+    // 2. Validate time (must be later than the current time)
     elseif($appointmentTimeStamp <= $currentTimeStamp) {
         echo '<script>alert("❌ Please select a valid time. Time must be later than the current time.")</script>';
     } else {
-        // Database insertion logic
+        // Database insertion logic (GOES TO tblappointment)
         $sql="INSERT INTO tblappointment(AppointmentNumber,Name,MobileNumber,Email,AppointmentDate,AppointmentTime,Specialization,Doctor,Message)
               VALUES (:aptnumber,:name,:mobnum,:email,:appdate,:aaptime,:specialization,:doctorlist,:message)";
         $query=$dbh->prepare($sql);
@@ -44,19 +45,17 @@ if(isset($_POST['submit'])) {
         if ($query->execute()) {
             $LastInsertId=$dbh->lastInsertId();
             if ($LastInsertId>0) {
-                // *** REDIRECTION FIX ***: Use header redirect for guaranteed navigation
-                header('Location: successfully-booked.php?aptid=' . $aptnumber); // Pass the appointment number for confirmation page
+                // REDIRECTION FIX: Guaranteed redirect after successful DB save
+                header('Location: successfully-booked.php?aptid=' . $aptnumber); 
                 exit(); 
             } else {
                 echo '<script>alert("❌ Something Went Wrong. Please try again")</script>';
             }
         } else {
-            // Handle SQL execution error if necessary
              echo '<script>alert("❌ Database error during insertion.")</script>';
         }
     }
 }
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -320,6 +319,7 @@ if(isset($_POST['submit'])) {
 
   <script>
 document.getElementById("appointmentForm").addEventListener("submit", function(e) {
+    // We prevent default submission to run custom validation
     e.preventDefault();
 
     const name = document.getElementById("name").value.trim();
@@ -330,6 +330,7 @@ document.getElementById("appointmentForm").addEventListener("submit", function(e
     const specialization = document.getElementById("specialization").value;
     const doctorlist = document.getElementById("doctorlist").value;
 
+    // Simplified regex validation (assuming these are what you intended)
     const nameRegex = /^[A-Za-z\s]{3,50}$/;
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
     const phoneRegex = /^\+?[0-9]{7,15}$/;
@@ -377,11 +378,11 @@ document.getElementById("appointmentForm").addEventListener("submit", function(e
         return false;
     }
 
-    // Submit form if all client-side validations pass
+    // *** CRITICAL STEP ***: If validation passes, manually submit the form to the PHP backend
+    // This allows the PHP script at the top of the file to run and handle DB insertion/redirection.
     e.target.submit();
 });
 </script>
-
 
 
 </section>
