@@ -24,157 +24,205 @@ if(isset($_POST['login']))
     } 
     else
     {
-        echo "<script>alert('Invalid Details');</script>";
+        echo "<script>alert('❌ Invalid Details');</script>";
     }
 }
 ?>
 <!doctype html>
 <html lang="en">
 <head>
-    <title>DAMS - Login Page</title>
+    <meta charset="utf-8" />
+    <title>DAMS - Doctor Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="libs/bower/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="libs/bower/material-design-iconic-font/dist/css/material-design-iconic-font.min.css">
-    <link rel="stylesheet" href="libs/bower/animate.css/animate.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap.css">
-    <link rel="stylesheet" href="assets/css/core.css">
-    <link rel="stylesheet" href="assets/css/misc-pages.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800,900,300">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+
     <style>
-        body.simple-page {
-            background: linear-gradient(135deg, #0077b6, #00b4d8, #90e0ef);
-            overflow-x: hidden;
-            font-family: 'Raleway', sans-serif;
-        }
-
-        /* Back to home button */
-        #back-to-home a {
-            color: #0077b6;
-            font-weight: 600;
-        }
-
-        .simple-page-wrap {
-            position: relative;
-            max-width: 400px;
-            margin: 80px auto;
-            padding: 40px 30px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #00b4d8 0%, #90e0ef 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
             overflow: hidden;
         }
 
-        /* Login Form */
-        #login-form h4 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            color: #fff;
+        .login-container {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .login-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 30px 25px;
+            box-shadow: 0 12px 30px rgba(2,46,90,0.08);
+            width: 100%;
+            max-width: 350px;
             text-align: center;
+            animation: fadeInUp 1s ease forwards;
+            opacity: 0;
         }
 
-        #login-form .form-control {
-            border-radius: 25px;
-            padding: 12px 20px;
+        .login-card h4 {
+            color: #04263b;
             margin-bottom: 20px;
-            border: 1px solid #cfd8dc;
-            font-size: 16px;
+            font-weight: 600;
         }
 
-        #login-form .btn-primary {
+        .form-control {
+            border-radius: 12px;
+            border: 1px solid #e6eef6;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .btn-primary {
             width: 100%;
             padding: 12px 0;
-            border-radius: 25px;
+            border-radius: 12px;
             font-weight: 600;
-            font-size: 18px;
-            background: linear-gradient(135deg, #ff6f61, #ffca3a, #6a4c93, #ff6f61);
-            background-size: 400% 400%;
-            animation: buttonGradient 6s ease infinite;
+            font-size: 16px;
+            background: linear-gradient(90deg, #0077b6, #00b4d8);
             border: none;
+            color: #fff;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        #login-form .btn-primary:hover {
+        .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0,180,216,0.2);
         }
 
-        @keyframes buttonGradient {
-            0%{background-position:0% 50%;}
-            50%{background-position:100% 50%;}
-            100%{background-position:0% 50%;}
+        .login-footer {
+            margin-top: 14px;
+            font-size: 14px;
+            color: #6b7280;
         }
 
-        /* Footer */
-        .simple-page-footer {
-            text-align: center;
-            margin-top: 20px;
+        .login-footer a {
+            color: #0077b6;
+            text-decoration: none;
         }
 
-        .simple-page-footer a {
-            color: #fff;
+        .login-footer a:hover {
             text-decoration: underline;
-            transition: all 0.3s ease;
         }
 
-        .simple-page-footer a:hover {
-            color: #ffca3a;
-            transform: scale(1.05);
+        .fact-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 280px;
+            color: #04263b;
+            font-weight: 500;
+            line-height: 1.4;
+            animation: fadeInRight 1s ease forwards;
+            opacity: 0;
         }
 
-        /* Animated doctor icon */
-        .doctor-icon {
+        .floating-icon {
+            font-size: 48px;
+            color: #00b4d8;
             position: absolute;
-            font-size: 50px;
-            color: #fff;
-            bottom: 10px;
-            left: 0;
-            animation: moveDoctor 6s linear infinite;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes moveDoctor {
-            0% {left: 0;}
-            50% {left: calc(100% - 50px);}
-            100% {left: 0;}
+        @keyframes float {
+            0%,100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
         }
 
-        @media (max-width: 480px) {
-            .simple-page-wrap {margin: 50px 20px; padding: 30px 20px;}
-            .doctor-icon {font-size: 35px;}
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInRight {
+            0% { opacity: 0; transform: translateX(20px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
-<body class="simple-page">
-    <div id="back-to-home">
-        <a href="../index.php" class="btn btn-outline btn-default">Home</a>
-    </div>
+<body>
 
-    <div class="simple-page-wrap">
-        <h4 class="form-title m-b-xl text-center">Login</h4>
+<i class="fa fa-user-md floating-icon" aria-hidden="true"></i>
 
-        <form method="post" name="login" id="login-form">
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="Enter Registered Email ID" required name="email">
-            </div>
-            <div class="form-group">
-                <input type="password" class="form-control" placeholder="Password" name="password" required>
-            </div>
-            <input type="submit" class="btn btn-primary" name="login" value="Sign IN">
+<div class="login-container">
+    <div class="login-card">
+        <h4>Doctor Login</h4>
+
+        <form method="post" id="login-form" novalidate>
+            <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <input type="submit" name="login" class="btn btn-primary" value="Sign In">
         </form>
 
-        <hr>
-        <a href="signup.php" style="color: white; display: block; text-align: center;">Signup/Registration</a>
-
-        <div class="simple-page-footer">
-            <p><a href="forgot-password.php">FORGOT YOUR PASSWORD ?</a></p>
+        <div class="login-footer">
+            <a href="signup.php">Signup / Register</a> | <a href="forgot-password.php">Forgot Password?</a>
         </div>
-
-        <!-- Animated doctor icon -->
-        <i class="fa fa-user-md doctor-icon" aria-hidden="true"></i>
     </div>
 
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <div class="fact-card">
+        <h5>💡 Medical Tip</h5>
+        <p>Regular hand hygiene can reduce hospital-acquired infections by up to 40%. Always remind patients about handwashing!</p>
+    </div>
+</div>
+
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Strict client-side validation
+document.getElementById("login-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const email = this.email.value.trim();
+    const password = this.password.value;
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
+    let valid = true;
+    let message = "";
+
+    if (!emailRegex.test(email)) {
+        valid = false;
+        message += "❌ Enter a valid email address.\n";
+    }
+
+    if (password.length < 6) {
+        valid = false;
+        message += "❌ Password must be at least 6 characters.\n";
+    }
+
+    if (!valid) {
+        alert(message);
+        return false;
+    }
+
+    this.submit();
+});
+</script>
+
 </body>
 </html>
