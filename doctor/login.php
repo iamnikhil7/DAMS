@@ -38,11 +38,9 @@ if(isset($_POST['login']))
     <title>DAMS - Doctor Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="libs/bower/font-awesome/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
 
     <style>
@@ -112,6 +110,9 @@ if(isset($_POST['login']))
             margin-top: 14px;
             font-size: 14px;
             color: #6b7280;
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* Added gap for better spacing */
         }
 
         .login-footer a {
@@ -165,6 +166,18 @@ if(isset($_POST['login']))
             margin-bottom: 12px;
         }
 
+        /* Styling for the new Home link section */
+        .nav-links {
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0; /* Separator */
+            margin-top: 12px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .nav-links a {
+            color: #0077b6;
+        }
+
         @media (max-width: 768px) {
             .login-container {
                 flex-direction: column;
@@ -192,7 +205,11 @@ if(isset($_POST['login']))
         </form>
 
         <div class="login-footer">
-            <a href="signup.php">Signup / Register</a> | <a href="forgot-password.php">Forgot Password?</a>
+            <div><a href="signup.php">Signup / Register</a> | <a href="forgot-password.php">Forgot Password?</a></div>
+            
+            <div class="nav-links">
+                <a href="../index.php">⬅️ Back to Home</a>
+            </div>
         </div>
     </div>
 
