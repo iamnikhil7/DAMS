@@ -1,7 +1,6 @@
 <?php
 session_start();
 include('doctor/includes/dbconnection.php');
-
 if(isset($_POST['submit'])) {
     $name=$_POST['name'];
     $mobnum=$_POST['phone'];
@@ -13,10 +12,22 @@ if(isset($_POST['submit'])) {
     $message=$_POST['message'];
     $aptnumber=mt_rand(100000000, 999999999);
     $cdate=date('Y-m-d');
-
-    if($appdate<=$cdate){
-        echo '<script>alert("Appointment date must be greater than today\'s date")</script>';
+    
+    // FIX START: Use Unix timestamps for reliable date and time comparison.
+    $currentTimeStamp = time(); 
+    $appointmentDateTime = $appdate . ' ' . $aaptime;
+    $appointmentTimeStamp = strtotime($appointmentDateTime);
+    // FIX END
+    
+    // Validate appointment date (must be today or later)
+    if($appdate < $cdate) {
+        echo '<script>alert("Appointment date must be today or later")</script>';
+    } 
+    // Validation logic: Check if appointment timestamp is less than or equal to current timestamp.
+    elseif($appointmentTimeStamp <= $currentTimeStamp) {
+        echo '<script>alert("❌ Please select a valid time. Time must be later than the current time.")</script>';
     } else {
+        // Database insertion logic
         $sql="INSERT INTO tblappointment(AppointmentNumber,Name,MobileNumber,Email,AppointmentDate,AppointmentTime,Specialization,Doctor,Message)
               VALUES (:aptnumber,:name,:mobnum,:email,:appdate,:aaptime,:specialization,:doctorlist,:message)";
         $query=$dbh->prepare($sql);
@@ -29,18 +40,23 @@ if(isset($_POST['submit'])) {
         $query->bindParam(':specialization',$specialization,PDO::PARAM_STR);
         $query->bindParam(':doctorlist',$doctorlist,PDO::PARAM_STR);
         $query->bindParam(':message',$message,PDO::PARAM_STR);
-        $query->execute();
-
-        $LastInsertId=$dbh->lastInsertId();
-        if ($LastInsertId>0) {
-            // open success page in new tab (same behaviour you had)
-            echo "<script>window.open('successfully-booked.php', '_blank');</script>";
-            exit();
+        
+        if ($query->execute()) {
+            $LastInsertId=$dbh->lastInsertId();
+            if ($LastInsertId>0) {
+                // *** REDIRECTION FIX ***: Use header redirect for guaranteed navigation
+                header('Location: successfully-booked.php?aptid=' . $aptnumber); // Pass the appointment number for confirmation page
+                exit(); 
+            } else {
+                echo '<script>alert("❌ Something Went Wrong. Please try again")</script>';
+            }
         } else {
-            echo '<script>alert("❌ Something Went Wrong. Please try again")</script>';
+            // Handle SQL execution error if necessary
+             echo '<script>alert("❌ Database error during insertion.")</script>';
         }
     }
 }
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -49,14 +65,11 @@ if(isset($_POST['submit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Appointment Management System | Home</title>
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap & Icons (local css files expected) -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Optional theme file you had -->
     <link href="css/templatemo-medic-care.css" rel="stylesheet">
 
     <style>
@@ -144,7 +157,6 @@ if(isset($_POST['submit'])) {
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="navbar navbar-expand-lg fixed-top">
   <div class="container">
     <a class="navbar-brand" href="index.php">Hospital Appointment System</a>
@@ -155,6 +167,7 @@ if(isset($_POST['submit'])) {
     <div class="collapse navbar-collapse justify-content-end" id="navMenu">
       <ul class="navbar-nav align-items-center">
         <li class="nav-item"><a class="nav-link" href="#about">About Us</a></li>
+        <li class="nav-item"><a class="nav-link" href="check-appointment.php">Check Appointment</a></li>
         <li class="nav-item"><a class="nav-link" href="#contact">Contact Us</a></li>
         <li class="nav-item ms-2"><a class="nav-link login-btn" href="doctor/login.php">Login</a></li>
       </ul>
@@ -162,7 +175,6 @@ if(isset($_POST['submit'])) {
   </div>
 </nav>
 
-<!-- HERO -->
 <header class="hero">
   <div class="container">
     <div class="hero-inner">
@@ -199,7 +211,6 @@ if(isset($_POST['submit'])) {
   </div>
 </header>
 
-<!-- ABOUT -->
 <section id="about" class="section" data-animate>
   <div class="container">
     <div class="row align-items-center gy-4">
@@ -235,43 +246,36 @@ if(isset($_POST['submit'])) {
   </div>
 </section>
 
-<!-- BOOKING -->
 <section id="booking" class="section" data-animate>
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <div class="booking-form shadow-lg p-4 rounded-4" style="background:#fff;">
           <h3 class="section-heading text-center mb-3" style="font-family:'Poppins', sans-serif; font-weight:600;">Book an Appointment</h3>
-          <p class="text-center" style="color:var(--muted);margin-bottom:20px;">Fill in the form below. Appointments will get an appointment number and a confirmation page (opens in new tab).</p>
+          <p class="text-center" style="color:var(--muted);margin-bottom:20px;">Fill in the form below. Appointments will get an appointment number and a confirmation page.</p>
 
           <form role="form" method="post" id="appointmentForm" novalidate>
             <div class="row g-3">
-              <!-- Name -->
               <div class="col-md-6">
                 <input type="text" name="name" id="name" class="form-control" placeholder="Full Name" required>
               </div>
 
-              <!-- Email -->
               <div class="col-md-6">
                 <input type="email" name="email" id="email" class="form-control" placeholder="Email Address" required>
               </div>
 
-              <!-- Phone -->
               <div class="col-md-6">
                 <input type="tel" name="phone" id="phone" class="form-control" placeholder="Phone Number" maxlength="15" required>
               </div>
 
-              <!-- Date -->
               <div class="col-md-6">
                 <input type="date" name="date" id="date" class="form-control" required>
               </div>
 
-              <!-- Time -->
               <div class="col-md-6">
                 <input type="time" name="time" id="time" class="form-control" required>
               </div>
 
-              <!-- Specialization -->
               <div class="col-md-6">
                 <select onchange="getdoctors(this.value);" name="specialization" id="specialization" class="form-control" required>
                   <option value="">Select Specialization</option>
@@ -285,7 +289,6 @@ if(isset($_POST['submit'])) {
                 </select>
               </div>
 
-              <!-- Doctor -->
               <div class="col-md-12">
                 <select name="doctorlist" id="doctorlist" class="form-control" required>
                   <option value="">Select Doctor</option>
@@ -299,12 +302,10 @@ if(isset($_POST['submit'])) {
                 </select>
               </div>
 
-              <!-- Message -->
               <div class="col-12">
                 <textarea class="form-control" rows="4" id="message" name="message" placeholder="Additional Message (optional)"></textarea>
               </div>
 
-              <!-- Submit -->
               <div class="col-12 text-center">
                 <button type="submit" name="submit" id="submit-button" class="btn btn-primary px-5 py-2 mt-3 rounded-pill fw-semibold">
                   Book Now
@@ -317,80 +318,74 @@ if(isset($_POST['submit'])) {
     </div>
   </div>
 
-  <!-- Strict Validation Script -->
   <script>
-    document.getElementById("appointmentForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+document.getElementById("appointmentForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const date = document.getElementById("date").value;
-      const time = document.getElementById("time").value;
-      const specialization = document.getElementById("specialization").value;
-      const doctorlist = document.getElementById("doctorlist").value;
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+    const specialization = document.getElementById("specialization").value;
+    const doctorlist = document.getElementById("doctorlist").value;
 
-      const nameRegex = /^[A-Za-z\s]{3,50}$/;
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
-      const phoneRegex = /^\+?[0-9]{7,15}$/;
+    const nameRegex = /^[A-Za-z\s]{3,50}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
+    const phoneRegex = /^\+?[0-9]{7,15}$/;
 
-      let valid = true;
-      let message = "";
+    let valid = true;
+    let message = "";
 
-      if (!nameRegex.test(name)) {
+    if (!nameRegex.test(name)) {
         valid = false;
         message += "❌ Enter a valid full name (letters only, min 3 chars).\n";
-      }
+    }
 
-      if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email)) {
         valid = false;
         message += "❌ Enter a valid email address.\n";
-      }
+    }
 
-      if (!phoneRegex.test(phone)) {
+    if (!phoneRegex.test(phone)) {
         valid = false;
-        message += "❌ Enter a valid phone number (digits only, 7–15 digits).\n";
-      }
+        message += "❌ Enter a valid phone number (7–15 digits).\n";
+    }
 
-      if (!date) {
+    if (!date) {
         valid = false;
         message += "❌ Select a valid appointment date.\n";
-      } else {
-        const today = new Date().toISOString().split("T")[0];
-        if (date < today) {
-          valid = false;
-          message += "❌ Appointment date cannot be in the past.\n";
-        }
-      }
+    }
 
-      if (!time) {
+    if (!time) {
         valid = false;
-        message += "❌ Select a valid time.\n";
-      }
+        message += "❌ Select a valid appointment time.\n";
+    }
 
-      if (!specialization) {
+    if (!specialization) {
         valid = false;
         message += "❌ Please select a specialization.\n";
-      }
+    }
 
-      if (!doctorlist) {
+    if (!doctorlist) {
         valid = false;
         message += "❌ Please select a doctor.\n";
-      }
+    }
 
-      if (!valid) {
+    if (!valid) {
         alert(message);
         return false;
-      }
+    }
 
-      // If everything is valid, submit the form
-      alert("✅ Appointment successfully booked!");
-      e.target.submit();
-    });
-  </script>
+    // Submit form if all client-side validations pass
+    e.target.submit();
+});
+</script>
+
+
+
 </section>
 
-<!-- CONTACT -->
 <section id="contact" class="section" data-animate>
   <div class="container">
     <div class="row align-items-center gy-4">
@@ -418,7 +413,6 @@ if(isset($_POST['submit'])) {
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="site-footer">
   <div class="container">
     <div class="footer-inner">
@@ -441,13 +435,12 @@ if(isset($_POST['submit'])) {
           <a href="#" aria-label="twitter"><i class="bi bi-twitter"></i></a>
           <a href="#" aria-label="linkedin"><i class="bi bi-linkedin"></i></a>
         </div>
-        <p style="margin-top:12px;font-size:13px;opacity:0.95;">&copy; <?php echo date('Y'); ?> Hospital Appointment Management System</p>
+        <p style="margin-top:12px;font-size:13px;opacity:0.95;">© <?php echo date('Y'); ?> Hospital Appointment Management System</p>
       </div>
     </div>
   </div>
 </footer>
 
-<!-- SCRIPTS -->
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
