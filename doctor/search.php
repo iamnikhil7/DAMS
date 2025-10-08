@@ -183,17 +183,6 @@ if (strlen($_SESSION['damsid']==0)) {
                                         </tr>
                                         <?php } ?>
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th>S.No</th>
-                                            <th>Appointment Number</th>
-                                            <th>Patient Name</th>
-                                            <th>Mobile Number</th>
-                                            <th>Email</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                         </div>
