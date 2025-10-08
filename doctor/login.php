@@ -5,26 +5,29 @@ include('includes/dbconnection.php');
 
 if(isset($_POST['login'])) 
 {
-    $email=$_POST['email'];
-    $password=md5($_POST['password']);
-    $sql ="SELECT ID,Email FROM tbldoctor WHERE Email=:email and Password=:password";
-    $query=$dbh->prepare($sql);
-    $query->bindParam(':email',$email,PDO::PARAM_STR);
-    $query-> bindParam(':password', $password, PDO::PARAM_STR);
-    $query-> execute();
-    $results=$query->fetchAll(PDO::FETCH_OBJ);
+    $email = $_POST['email'];
+    $password = md5($_POST['password']);
+
+    $sql ="SELECT ID, Email FROM tbldoctor WHERE Email=:email AND Password=:password";
+    $query = $dbh->prepare($sql);
+    $query->bindParam(':email', $email, PDO::PARAM_STR);
+    $query->bindParam(':password', $password, PDO::PARAM_STR);
+    $query->execute();
+    $results = $query->fetchAll(PDO::FETCH_OBJ);
+
     if($query->rowCount() > 0)
     {
         foreach ($results as $result) {
-            $_SESSION['damsid']=$result->ID;
-            $_SESSION['damsemailid']=$result->Email;
+            $_SESSION['damsid'] = $result->ID;
+            $_SESSION['damsemailid'] = $result->Email;
         }
-        $_SESSION['login']=$_POST['email'];
-        echo "<script type='text/javascript'> document.location ='dashboard.php'; </script>";
+        $_SESSION['login'] = $_POST['email'];
+        header("Location: dashboard.php");
+        exit();
     } 
     else
     {
-        echo "<script>alert('❌ Invalid Details');</script>";
+        $error_message = "❌ Invalid Email or Password!";
     }
 }
 ?>
@@ -157,6 +160,11 @@ if(isset($_POST['login']))
             100% { opacity: 1; transform: translateX(0); }
         }
 
+        .error-msg {
+            color: #d32f2f;
+            margin-bottom: 12px;
+        }
+
         @media (max-width: 768px) {
             .login-container {
                 flex-direction: column;
@@ -172,6 +180,10 @@ if(isset($_POST['login']))
 <div class="login-container">
     <div class="login-card">
         <h4>Doctor Login</h4>
+
+        <?php if(isset($error_message)) { ?>
+            <div class="error-msg"><?php echo $error_message; ?></div>
+        <?php } ?>
 
         <form method="post" id="login-form" novalidate>
             <input type="email" name="email" class="form-control" placeholder="Email Address" required>
@@ -196,8 +208,6 @@ if(isset($_POST['login']))
 <script>
 // Strict client-side validation
 document.getElementById("login-form").addEventListener("submit", function(e) {
-    e.preventDefault();
-
     const email = this.email.value.trim();
     const password = this.password.value;
 
@@ -216,11 +226,10 @@ document.getElementById("login-form").addEventListener("submit", function(e) {
     }
 
     if (!valid) {
+        e.preventDefault();
         alert(message);
         return false;
     }
-
-    this.submit();
 });
 </script>
 
