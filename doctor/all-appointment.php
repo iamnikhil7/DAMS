@@ -20,7 +20,11 @@ if (strlen($_SESSION['damsid']==0)) {
     <link rel="stylesheet" href="assets/css/core.css">
     <link rel="stylesheet" href="assets/css/app.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800,900,300">
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> a09cffad84abe005c495e8cae446e15d8b5e4295
     <style>
         body.menubar-left {
             background: linear-gradient(120deg, #6a11cb, #2575fc, #6a11cb);
@@ -193,4 +197,8 @@ if (strlen($_SESSION['damsid']==0)) {
 
 </body>
 </html>
+<<<<<<< HEAD
 <?php } ?>
+=======
+<?php } ?>
+>>>>>>> a09cffad84abe005c495e8cae446e15d8b5e4295

@@ -242,4 +242,8 @@ if (strlen($_SESSION['damsid']==0)) {
 
 </body>
 </html>
+<<<<<<< HEAD
 <?php } ?>
+=======
+<?php } ?>
+>>>>>>> a09cffad84abe005c495e8cae446e15d8b5e4295

@@ -1,4 +1,4 @@
-<?php
+ <?php
 session_start();
 // The include path for dbconnection is typically '../doctor/includes/dbconnection.php' 
 // if this file is in the root directory and the 'doctor' folder is also in the root.
@@ -263,4 +263,8 @@ include('doctor/includes/dbconnection.php');
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/custom.js"></script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> a09cffad84abe005c495e8cae446e15d8b5e4295
