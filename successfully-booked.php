@@ -16,7 +16,7 @@
 <body>
     <div class="success-box">
         <h1>✅ Appointment Booked Successfully!</h1>
-        <p>Thank you for booking an appointment with Tegu Hospital. We will contact you shortly to confirm your appointment details.</p>
+        <p>Thank you for booking an appointment with our Hospital Management System. We will contact you shortly to confirm your appointment details.</p>
         <a href="index.php">Back to Home</a>
     </div>
 </body>
