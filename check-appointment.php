@@ -1,4 +1,4 @@
-<?php
+ <?php
 session_start();
 // The include path for dbconnection is typically '../doctor/includes/dbconnection.php' 
 // if this file is in the root directory and the 'doctor' folder is also in the root.
