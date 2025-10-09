@@ -82,8 +82,6 @@ foreach($results as $row)
             <a style="color:white" href="profile.php">My Profile &nbsp</a> <a style="color:white" href="change-password.php">Change Password &nbsp</a><a style="color:white" href="logout.php">Logout &nbsp</a>
             
           
-        
-
      
     </div>
   </div><!-- navbar-container -->
