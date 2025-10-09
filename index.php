@@ -187,7 +187,7 @@ if(isset($_POST['submit'])) {
 
           <div class="cta-row">
             <a href="#booking" class="btn-cta">Book Appointment</a>
-            <a href="login.php" class="btn-outline">Staff Login</a>
+            <a href="admin/login.php" class="btn-outline">Admin Login</a>
           </div>
 
           <div style="margin-top:18px;display:flex;gap:14px;align-items:center;">
@@ -253,8 +253,7 @@ if(isset($_POST['submit'])) {
           <h3 class="section-heading text-center mb-3" style="font-family:'Poppins', sans-serif; font-weight:600;">Book an Appointment</h3>
           <p class="text-center" style="color:var(--muted);margin-bottom:20px;">Fill in the form below. Appointments will get an appointment number and a confirmation page.</p>
 
-          <form role="form" method="post" id="appointmentForm" novalidate>
-            <div class="row g-3">
+       <form id="appointmentForm" method="POST" action="submit-appointment.php">
               <div class="col-md-6">
                 <input type="text" name="name" id="name" class="form-control" placeholder="Full Name" required>
               </div>
@@ -306,7 +305,7 @@ if(isset($_POST['submit'])) {
               </div>
 
               <div class="col-12 text-center">
-                <button type="submit" name="submit" id="submit-button" class="btn btn-primary px-5 py-2 mt-3 rounded-pill fw-semibold">
+                <button type="submit" class="btn btn-primary px-5 py-2 mt-3 rounded-pill fw-semibold">
                   Book Now
                 </button>
               </div>
