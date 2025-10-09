@@ -1,0 +1,55 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Collect and sanitize input
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
+    $date = trim($_POST['date']);
+    $time = trim($_POST['time']);
+    $specialization = trim($_POST['specialization']);
+    $doctor = trim($_POST['doctorlist']);
+    $message = isset($_POST['message']) ? trim($_POST['message']) : null;
+
+    // Optional server-side validation
+    if (empty($name) || empty($email) || empty($phone) || empty($date) || empty($time) || empty($specialization) || empty($doctor)) {
+        die("❌ All required fields must be filled!");
+    }
+
+    // Database connection via PDO
+    include 'includes/dbconnection.php'; // $conn should be a PDO instance
+
+    // Generate AppointmentNumber
+    $appointmentNumber = rand(100000, 999999);
+
+    // Prepare SQL using named placeholders
+    $sql = "INSERT INTO tblappointment 
+        (AppointmentNumber, Name, MobileNumber, Email, AppointmentDate, AppointmentTime, Specialization, Doctor, Message, Status)
+        VALUES
+        (:appointmentNumber, :name, :mobile, :email, :date, :time, :specialization, :doctor, :message, :status)";
+
+    $stmt = $conn->prepare($sql);
+
+    // Bind parameters
+    $stmt->bindParam(':appointmentNumber', $appointmentNumber, PDO::PARAM_INT);
+    $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+    $stmt->bindParam(':mobile', $phone, PDO::PARAM_STR);
+    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+    $stmt->bindParam(':date', $date, PDO::PARAM_STR);
+    $stmt->bindParam(':time', $time, PDO::PARAM_STR);
+    $stmt->bindParam(':specialization', $specialization, PDO::PARAM_STR);
+    $stmt->bindParam(':doctor', $doctor, PDO::PARAM_INT);
+    $stmt->bindParam(':message', $message, PDO::PARAM_STR);
+    $status = "Pending";
+    $stmt->bindParam(':status', $status, PDO::PARAM_STR);
+
+    // Execute statement
+   if ($stmt->execute()) {
+    // Redirect to success page with appointment number as GET parameter
+    header("Location: successfully-booked.php");
+    exit(); // Make sure to exit after header redirection
+} else {
+    $errorInfo = $stmt->errorInfo();
+    echo "❌ Error: " . $errorInfo[2];
+}
+}
+?>
